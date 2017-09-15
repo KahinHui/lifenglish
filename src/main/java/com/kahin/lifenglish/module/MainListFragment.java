@@ -76,7 +76,6 @@ public class MainListFragment extends Fragment {
 
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInsatnceState) {
 
-        //dosomething();
 
         if (container == null) {
             return  null;
