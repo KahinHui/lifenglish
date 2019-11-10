@@ -12,16 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.kahin.lifenglish.BR;
 import com.kahin.lifenglish.R;
 import com.kahin.lifenglish.adapter.ItemListAdapter;
+import com.kahin.lifenglish.adapter.ItemListAdapterMvvm;
 import com.kahin.lifenglish.model.MainListData;
+import com.kahin.lifenglish.viewModel.MainListViewModel;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -36,22 +35,23 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainListFragment extends Fragment {
 
-    Unbinder mUnbinder;
+    //Unbinder mUnbinder;
 
-    @BindView(R.id.swipeRefreshLayout)
+    //@BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout mSwipeRefreshLayout;
-    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+    //@BindView(R.id.recycler_view)
+    RecyclerView mRecyclerView;
 
     ItemListAdapter mItemListAdapter = new ItemListAdapter();
 
-    Observer<List<Item>> mObserver = new Observer<List<Item>>() {
+    Observer<List<MainListViewModel>> mObserver = new Observer<List<MainListViewModel>>() {
         @Override
         public void onSubscribe(Disposable d) {
 
         }
 
         @Override
-        public void onNext(List<Item> value) {
+        public void onNext(List<MainListViewModel> value) {
             mSwipeRefreshLayout.setRefreshing(false);
             mItemListAdapter.setItems(value);
         }
@@ -76,19 +76,28 @@ public class MainListFragment extends Fragment {
 
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInsatnceState) {
 
+        //dosomething();
 
         if (container == null) {
             return  null;
         }
 
-        View view = layoutInflater.inflate(R.layout.mainlist_fragment, container, false);
-        mUnbinder = ButterKnife.bind(this, view);
+        //View view = layoutInflater.inflate(R.layout.fragment_mainlist, container, false);
+        //mUnbinder = ButterKnife.bind(this, view);
 
-        //mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        View view = layoutInflater.inflate(R.layout.fragment_mainlist, container, false);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
 
         if (mRecyclerView != null && mSwipeRefreshLayout != null) {
+            //mRecyclerView.setLayoutManager(new GridLayoutManager(container.getContext(), 2));
+            //mRecyclerView.setAdapter(mItemListAdapter);
+
+            //mvvm model
             mRecyclerView.setLayoutManager(new GridLayoutManager(container.getContext(), 2));
-            mRecyclerView.setAdapter(mItemListAdapter);
+            MainListData mainList = new MainListData(getActivity().getApplicationContext());
+            List<MainListViewModel> items = mainList.queryMainListReturn();
+            mRecyclerView.setAdapter(new ItemListAdapterMvvm(items, BR.mainliostItem, container.getContext(), R.layout.item_mainlist_mvvm));
 
             mSwipeRefreshLayout.setColorSchemeColors(Color.BLUE, Color.GREEN, Color.RED, Color.YELLOW);
             mSwipeRefreshLayout.setEnabled(false);
@@ -105,7 +114,7 @@ public class MainListFragment extends Fragment {
             @Override
             public void subscribe(ObservableEmitter e) throws Exception {
                 MainListData mainList = new MainListData(getActivity().getApplicationContext());
-                List<Item> items = mainList.querMainList();
+                List<MainListViewModel> items = mainList.queryMainListReturn();
                 e.onNext(items);
                 e.onComplete();
             }
@@ -117,7 +126,7 @@ public class MainListFragment extends Fragment {
 
     public void onDestroyView() {
         super.onDestroyView();
-        mUnbinder.unbind();
+        //mUnbinder.unbind();
     }
 
 }

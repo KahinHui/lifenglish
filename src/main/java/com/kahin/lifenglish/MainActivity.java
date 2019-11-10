@@ -3,6 +3,7 @@ package com.kahin.lifenglish;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,11 +16,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.kahin.lifenglish.SQLite.DBHelper;
 import com.kahin.lifenglish.model.MainListData;
 import com.kahin.lifenglish.module.MainListFragment;
+
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,14 +31,14 @@ public class MainActivity extends AppCompatActivity
 
     Context mContext = this;
 
-    @BindView(R.id.toolbar)
+    /*@BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.fab)
     FloatingActionButton fab;
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
     @BindView(R.id.nav_view)
-    NavigationView navigationView;
+    NavigationView navigationView;*/
 
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
@@ -49,13 +51,13 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
 
-        ButterKnife.bind(this);
+        //ButterKnife.bind(MainActivity.this);
 
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //FloatingActionButton fab = (FloatingActionButton) findViewById (R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById (R.id.fab);
+       fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -63,13 +65,13 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        //NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         //DBHelper dbHelper = new DBHelper(this);
@@ -78,11 +80,31 @@ public class MainActivity extends AppCompatActivity
         //mainList.instert();
         //mainList.queryMainList();
 
+        DBHelper myDbHelper = new DBHelper(mContext);
+
+        try {
+
+            myDbHelper.createDataBase();
+
+        } catch (IOException ioe) {
+
+            throw new Error("Unable to create database");
+
+        }
+
+        try {
+
+            myDbHelper.openDataBase();
+
+        }catch(SQLException sqle){
+
+            throw new Error(sqle);
+        }
+
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
 
         mMainListFragment = new MainListFragment();
-
 
         fragmentTransaction.replace(R.id.content_frame, mMainListFragment, "");
         fragmentTransaction.commit();

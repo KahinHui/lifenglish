@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kahin.lifenglish.R;
-import com.kahin.lifenglish.module.Item;
+import com.kahin.lifenglish.viewModel.MainListViewModel;
 
 import java.util.List;
 
@@ -20,24 +20,22 @@ import butterknife.ButterKnife;
  */
 
 public class ItemListAdapter extends RecyclerView.Adapter {
-    List<Item> items;
+    List<MainListViewModel> items;
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup patent, int viewType) {
-        View view = LayoutInflater.from(patent.getContext()).inflate(R.layout.mainist_item, patent, false);
+        View view = LayoutInflater.from(patent.getContext()).inflate(R.layout.item_mainlist, patent, false);
         return new DebounceViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         DebounceViewHolder debounceViewHolder = (DebounceViewHolder)holder;
-        Item item = items.get(position);
+        MainListViewModel item = items.get(position);
         //To do something
 
         if (debounceViewHolder.descriptionTv != null)
-            debounceViewHolder.descriptionTv.setText(item.description);
-
-
+            debounceViewHolder.descriptionTv.setText(item.getDescription());
     }
 
     @Override
@@ -45,7 +43,7 @@ public class ItemListAdapter extends RecyclerView.Adapter {
         return items == null ? 0 : items.size();
     }
 
-    public void setItems(List<Item> items) {
+    public void setItems(List<MainListViewModel> items) {
         this.items = items;
         notifyDataSetChanged();
     }

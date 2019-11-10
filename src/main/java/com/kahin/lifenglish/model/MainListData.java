@@ -6,12 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.databinding.ObservableField;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.kahin.lifenglish.SQLite.DBHelper;
 import com.kahin.lifenglish.SQLite.DBManager;
-import com.kahin.lifenglish.module.Item;
+import com.kahin.lifenglish.viewModel.MainListViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +25,24 @@ public class MainListData {
 
     Context mContext = null;
 
-    public final ObservableField<ArrayList> mainlist = new ObservableField<>();
+    public List<MainListViewModel> mainlist;
+
+    //public final ObservableField<List<MainListViewModel>> mDatas = new ObservableField<>();
+
+    //public final ObservableField<String> description = new ObservableField<>();
+    //public final ObservableField<String> imageUrl = new ObservableField<>();
 
     DBManager mDBManager;
 
     public MainListData(Context context) {
         mContext = context;
+    }
+
+    public MainListData(Context context, MainListViewModel data) {
+        mContext = context;
+        //description.set(data.description);
+        //imageUrl.set(data.imageUrl);
+
     }
 
     public void instert() {
@@ -116,8 +126,8 @@ public class MainListData {
 
     }
 
-    public List<Item> querMainList() {
-        List<Item> items = new ArrayList<Item>();
+    public List<MainListViewModel> queryMainListReturn() {
+        List<MainListViewModel> items = new ArrayList<MainListViewModel>();
 
         mDBManager = DBManager.getInstance(mContext);
 
@@ -134,7 +144,7 @@ public class MainListData {
                 while (cursor.moveToNext()) {
                     String description = cursor.getString(cursor.getColumnIndex(MAINLIST_NAME));
 
-                    items.add(new Item(description, ""));
+                    items.add(new MainListViewModel(description, ""));
 
                     //Toast.makeText(mContext, description, Toast.LENGTH_SHORT).show();
                 }
